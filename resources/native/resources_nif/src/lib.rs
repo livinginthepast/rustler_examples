@@ -10,4 +10,8 @@ fn on_load(env: Env, _info: Term) -> bool {
     true
 }
 
-rustler::init!("Elixir.Resources.NIF", [state::new, state::get, state::set], load = on_load);
+rustler::init!(
+    "Elixir.Resources.NIF",
+    [state::new, state::get, state::set],
+    load = on_load
+);
