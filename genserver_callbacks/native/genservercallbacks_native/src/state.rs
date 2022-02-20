@@ -46,8 +46,6 @@ fn get<'a>(env: Env<'a>, resource: ResourceArc<StateResource>) -> Term<'a> {
         Ok(pid)
     });
 
-    // Still returns {:ok, :ok} to Elixir... This would be better if it could be
-    // :ok | {:error, term()}
     atoms::ok().encode(env)
 }
 
