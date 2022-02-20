@@ -1,0 +1,16 @@
+[package]
+name = "genservercallbacks_native"
+version = "0.1.0"
+authors = []
+edition = "2018"
+
+[lib]
+name = "genservercallbacks_native"
+path = "src/lib.rs"
+crate-type = ["cdylib"]
+
+[dependencies]
+rustler = "0.23.0"
+serde = "1.0.136"
+serde_rustler = {git = "https://github.com/avencera/serde_rustler", branch = "rustler-0.23"}
+
