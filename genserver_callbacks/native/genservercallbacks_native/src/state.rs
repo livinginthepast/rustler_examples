@@ -1,6 +1,6 @@
 use rustler::types::pid::Pid;
 use rustler::Encoder;
-use rustler::{Atom, Env, NifResult, ResourceArc};
+use rustler::{Atom, Env, NifResult, ResourceArc, Term};
 use std::sync::Mutex;
 
 use crate::atoms;
@@ -28,7 +28,7 @@ impl State {
 pub struct StateResource(Mutex<State>);
 
 #[rustler::nif]
-fn get(resource: ResourceArc<StateResource>) -> Result<Atom, Atom> {
+fn get<'a>(env: Env<'a>, resource: ResourceArc<StateResource>) -> Term<'a> {
     let mut msg_env = rustler::env::OwnedEnv::new();
 
     std::thread::spawn(move || {
@@ -48,19 +48,19 @@ fn get(resource: ResourceArc<StateResource>) -> Result<Atom, Atom> {
 
     // Still returns {:ok, :ok} to Elixir... This would be better if it could be
     // :ok | {:error, term()}
-    Ok(atoms::ok())
+    atoms::ok().encode(env)
 }
 
 #[rustler::nif]
-fn set<'a>(resource: ResourceArc<StateResource>, value: String) -> Result<Atom, Atom> {
+fn set<'a>(env: Env<'a>, resource: ResourceArc<StateResource>, value: String) -> Term<'a> {
     let mut state = match resource.0.try_lock() {
-        Err(_) => return Err(atoms::lock_fail()),
+        Err(_) => return (atoms::error(), atoms::lock_fail()).encode(env),
         Ok(guard) => guard,
     };
 
     state.update(value.clone());
 
-    Ok(atoms::ok())
+    atoms::ok().encode(env)
 }
 
 #[rustler::nif]
