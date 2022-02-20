@@ -11,10 +11,6 @@ pub fn on_load(env: Env, _info: Term) -> bool {
 
 rustler::init!(
     "Elixir.GenServerCallbacks.Native",
-    [
-        state::new,
-        state::get,
-        state::set
-    ],
+    [state::new, state::get, state::set],
     load = on_load
 );

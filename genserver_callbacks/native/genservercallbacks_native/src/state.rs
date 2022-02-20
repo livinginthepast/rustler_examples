@@ -1,10 +1,9 @@
 use rustler::types::pid::Pid;
-use rustler::{Atom, Env, NifResult, ResourceArc};
 use rustler::Encoder;
+use rustler::{Atom, Env, NifResult, ResourceArc};
 use std::sync::Mutex;
 
 use crate::atoms;
-
 
 pub struct State {
     value: String,
@@ -28,9 +27,8 @@ impl State {
 
 pub struct StateResource(Mutex<State>);
 
-
 #[rustler::nif]
-fn get(resource: ResourceArc<StateResource>) ->Result<Atom, Atom> {
+fn get(resource: ResourceArc<StateResource>) -> Result<Atom, Atom> {
     let mut msg_env = rustler::env::OwnedEnv::new();
 
     std::thread::spawn(move || {
@@ -42,9 +40,7 @@ fn get(resource: ResourceArc<StateResource>) ->Result<Atom, Atom> {
         let pid = state.pid();
         let result = state.get();
 
-        msg_env.send_and_clear(&pid, |env| {
-            (atoms::current_value(), result).encode(env)
-        });
+        msg_env.send_and_clear(&pid, |env| (atoms::current_value(), result).encode(env));
 
         // here to make the type checker happy
         Ok(pid)
@@ -71,7 +67,10 @@ fn set<'a>(resource: ResourceArc<StateResource>, value: String) -> Result<Atom, 
 pub fn new<'a>(env: Env<'a>) -> NifResult<(Atom, ResourceArc<StateResource>)> {
     let pid = env.pid();
 
-    let state = State { value: "Hello world".to_string(), pid: pid };
+    let state = State {
+        value: "Hello world".to_string(),
+        pid: pid,
+    };
     let resource = ResourceArc::new(StateResource(Mutex::new(state)));
 
     Ok((atoms::ok(), resource))

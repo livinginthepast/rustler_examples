@@ -13,7 +13,7 @@ mod atoms {
 }
 
 pub struct State {
-    value: String
+    value: String,
 }
 
 impl State {
@@ -28,7 +28,6 @@ impl State {
 }
 
 pub struct StateResource(Mutex<State>);
-
 
 #[rustler::nif]
 fn get(resource: ResourceArc<StateResource>) -> Result<String, Atom> {
@@ -54,12 +53,13 @@ fn set(resource: ResourceArc<StateResource>, value: String) -> Result<String, At
 
 #[rustler::nif]
 fn new() -> (Atom, ResourceArc<StateResource>) {
-    let state = State { value: "Hello world".to_string() };
+    let state = State {
+        value: "Hello world".to_string(),
+    };
     let resource = ResourceArc::new(StateResource(Mutex::new(state)));
 
     (atoms::ok(), resource)
 }
-
 
 // LOAD NIF
 
@@ -68,8 +68,4 @@ fn on_load(env: Env, _info: Term) -> bool {
     true
 }
 
-rustler::init!(
-    "Elixir.Resources.NIF",
-    [new, get, set],
-    load=on_load
-);
+rustler::init!("Elixir.Resources.NIF", [new, get, set], load = on_load);

@@ -4,4 +4,3 @@ rustler::atoms! {
     lock_fail,
     current_value,
 }
-
