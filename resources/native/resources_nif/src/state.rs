@@ -1,4 +1,4 @@
-use rustler::{Atom, ResourceArc};
+use rustler::{Atom, Encoder, Env, ResourceArc, Term};
 use std::sync::Mutex;
 
 use crate::atoms;
@@ -31,15 +31,15 @@ fn get(resource: ResourceArc<StateResource>) -> Result<String, Atom> {
 }
 
 #[rustler::nif]
-fn set(resource: ResourceArc<StateResource>, value: String) -> Result<String, Atom> {
+fn set<'a>(env: Env<'a>, resource: ResourceArc<StateResource>, value: String) -> Term<'a> {
     let mut state = match resource.0.try_lock() {
-        Err(_) => return Err(atoms::lock_fail()),
+        Err(_) => return (atoms::error(), atoms::lock_fail()).encode(env),
         Ok(guard) => guard,
     };
 
     state.update(value.clone());
 
-    Ok(value)
+    atoms::ok().encode(env)
 }
 
 #[rustler::nif]

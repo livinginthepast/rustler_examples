@@ -8,7 +8,7 @@ defmodule ResourcesTest do
 
   test "Updates state" do
     assert {:ok, ref} = Resources.new()
-    assert {:ok, "Hello moon"} = Resources.set(ref, "Hello moon")
+    assert :ok = Resources.set(ref, "Hello moon")
     assert {:ok, "Hello moon"} = Resources.get(ref)
   end
 end
